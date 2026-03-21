@@ -7,9 +7,10 @@ import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import {
-  Server, User, LogOut, Menu, X, Cloud, ChevronDown,
+  Server, User, LogOut, Menu, X, Cloud, ChevronDown, Sun, Moon,
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useTheme } from '../hooks/useTheme';
 
 const navItems = [
   { to: '/', label: 'Servers', icon: Server },
@@ -19,6 +20,7 @@ const navItems = [
 export function CloudLayout() {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const { theme, toggle: toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -69,6 +71,16 @@ export function CloudLayout() {
 
             {/* User Menu */}
             <div className="flex items-center gap-3">
+              {/* Theme toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg text-nest-400 hover:text-white hover:bg-nest-800/50
+                  transition-colors"
+                title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+
               {/* Desktop user dropdown */}
               <div className="relative hidden md:block">
                 <button

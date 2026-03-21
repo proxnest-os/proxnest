@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* ─── Dark Theme (default) ─────────────────────── */
 @theme {
   --color-nest-50: #eef2ff;
   --color-nest-100: #e0e7ff;
@@ -14,23 +15,86 @@
   --color-nest-950: #0c0a24;
 }
 
+/* ─── Light Theme Overrides ────────────────────── */
+/* Inverts the nest scale: darkest backgrounds → light, light text → dark.
+   Brand accent (500/600) stays consistent for continuity. */
+[data-theme="light"] {
+  --color-nest-950: #f8fafc;
+  --color-nest-900: #f1f5f9;
+  --color-nest-800: #e2e8f0;
+  --color-nest-700: #cbd5e1;
+  --color-nest-600: #4f46e5;
+  --color-nest-500: #6366f1;
+  --color-nest-400: #64748b;
+  --color-nest-300: #334155;
+  --color-nest-200: #1e293b;
+  --color-nest-100: #0f172a;
+  --color-nest-50: #020617;
+}
+
+/* ─── Glass effect ─────────────────────────────── */
 .glass {
   background: rgba(30, 27, 75, 0.5);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(129, 140, 248, 0.1);
+}
+[data-theme="light"] .glass {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(100, 116, 139, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .glass-hover:hover {
   background: rgba(30, 27, 75, 0.7);
   border-color: rgba(129, 140, 248, 0.2);
 }
+[data-theme="light"] .glass-hover:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(100, 116, 139, 0.25);
+}
 
+/* ─── Glow border ──────────────────────────────── */
 .glow-border {
   box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.1),
               0 0 20px -5px rgba(99, 102, 241, 0.15);
 }
+[data-theme="light"] .glow-border {
+  box-shadow: 0 0 0 1px rgba(100, 116, 139, 0.12),
+              0 1px 4px rgba(0, 0, 0, 0.06);
+}
 
+/* ─── Light mode: fix hardcoded whites ─────────── */
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* In light mode, text-white on backgrounds needs to become dark.
+   We use a utility class override approach — Tailwind's text-white
+   maps to --tw-text-opacity and color:white. Override at the root. */
+[data-theme="light"] .text-white {
+  color: #0f172a !important;
+}
+
+/* Keep white text inside brand-colored elements (buttons, badges, avatars) */
+[data-theme="light"] .bg-gradient-to-br .text-white,
+[data-theme="light"] [class*="bg-nest-500"] .text-white,
+[data-theme="light"] [class*="bg-nest-600"] .text-white,
+[data-theme="light"] [class*="bg-emerald-400"] .text-white,
+[data-theme="light"] [class*="bg-rose-500"] .text-white,
+[data-theme="light"] [class*="bg-amber-500"] .text-white,
+[data-theme="light"] .bg-gradient-to-br.text-white {
+  color: #ffffff !important;
+}
+
+/* Fix bg-black overlays in light mode */
+[data-theme="light"] .bg-black\/60 {
+  background: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ─── Scrollbar ────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(129, 140, 248, 0.2); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(129, 140, 248, 0.4); }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.25); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.45); }
