@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useTheme } from '../hooks/useTheme';
+import { PWAInstallBanner, OfflineBanner, UpdateToast } from './PWAPrompts';
 
 const navItems = [
   { to: '/', label: 'Servers', icon: Server },
@@ -192,6 +193,11 @@ export function CloudLayout() {
           </div>
         )}
       </header>
+
+      {/* ─── PWA Overlays ────────────────────────── */}
+      <OfflineBanner />
+      <UpdateToast />
+      <PWAInstallBanner />
 
       {/* ─── Content ───────────────────────────── */}
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-24 pb-12">
