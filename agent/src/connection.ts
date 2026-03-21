@@ -9,6 +9,7 @@ import type { AgentConfig, AgentIdentity } from './config.js';
 import { saveIdentity } from './config.js';
 import { MetricsCollector, type FullMetrics, type HeartbeatMetrics } from './collector.js';
 import type { Logger } from './logger.js';
+import { TerminalService } from './terminal-service.js';
 
 // ─── Protocol Messages ───────────────────────────
 
@@ -18,6 +19,9 @@ type OutgoingMessage =
   | { type: 'metrics'; agentId: string; metrics: FullMetrics }
   | { type: 'command_result'; agentId: string; commandId: string; success: boolean; data?: unknown; error?: string }
   | { type: 'proxy_response'; requestId: string; status: number; headers: Record<string, string>; body: string }
+  | { type: 'terminal_data'; agentId: string; sessionId: string; data: string }
+  | { type: 'terminal_exit'; agentId: string; sessionId: string; code: number | null }
+  | { type: 'terminal_opened'; agentId: string; sessionId: string; success: boolean; error?: string }
   | { type: 'pong' };
 
 type IncomingMessage =
@@ -29,6 +33,10 @@ type IncomingMessage =
   | { type: 'proxy_request'; requestId: string; method: string; path: string; body?: string }
   | { type: 'ws_proxy'; clientId: string; data: unknown }
   | { type: 'ws_proxy_connect'; clientId: string; serverId: number }
+  | { type: 'terminal_open'; sessionId: string; vmid: number; guestType: 'lxc' | 'qemu'; cols?: number; rows?: number }
+  | { type: 'terminal_input'; sessionId: string; data: string }
+  | { type: 'terminal_resize'; sessionId: string; cols: number; rows: number }
+  | { type: 'terminal_close'; sessionId: string }
   | { type: 'ping' }
   | { type: 'error'; message: string };
 
@@ -47,6 +55,7 @@ export class ConnectionManager {
   private log: Logger;
   private commandHandler: CommandHandler | null = null;
 
+  private terminalService: TerminalService;
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   private metricsTimer: ReturnType<typeof setInterval> | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -64,6 +73,27 @@ export class ConnectionManager {
     this.identity = identity;
     this.collector = collector;
     this.log = logger;
+
+    // Initialize terminal service with callbacks to send data back through WS
+    this.terminalService = new TerminalService(
+      logger,
+      (sessionId: string, data: string) => {
+        this.send({
+          type: 'terminal_data',
+          agentId: this.identity.agentId,
+          sessionId,
+          data,
+        });
+      },
+      (sessionId: string, code: number | null) => {
+        this.send({
+          type: 'terminal_exit',
+          agentId: this.identity.agentId,
+          sessionId,
+          code,
+        });
+      },
+    );
   }
 
   // ─── Public API ─────────────────────────────
@@ -98,6 +128,7 @@ export class ConnectionManager {
   disconnect(): void {
     this.isStopping = true;
     this.clearTimers();
+    this.terminalService.closeAll();
     if (this.ws) {
       this.ws.close(1000, 'Agent shutting down');
       this.ws = null;
@@ -165,6 +196,18 @@ export class ConnectionManager {
         break;
       case 'ws_proxy':
         this.log.debug({ clientId: msg.clientId }, 'WS proxy data');
+        break;
+      case 'terminal_open':
+        this.handleTerminalOpen(msg);
+        break;
+      case 'terminal_input':
+        this.terminalService.write(msg.sessionId, msg.data);
+        break;
+      case 'terminal_resize':
+        this.terminalService.resize(msg.sessionId, msg.cols, msg.rows);
+        break;
+      case 'terminal_close':
+        this.terminalService.close(msg.sessionId);
         break;
       case 'ping':
         this.send({ type: 'pong' });
@@ -244,6 +287,23 @@ export class ConnectionManager {
         error: err instanceof Error ? err.message : String(err),
       });
     }
+  }
+
+  private handleTerminalOpen(msg: { sessionId: string; vmid: number; guestType: 'lxc' | 'qemu'; cols?: number; rows?: number }): void {
+    const result = this.terminalService.open(
+      msg.sessionId,
+      msg.vmid,
+      msg.guestType,
+      msg.cols || 80,
+      msg.rows || 24,
+    );
+    this.send({
+      type: 'terminal_opened',
+      agentId: this.identity.agentId,
+      sessionId: msg.sessionId,
+      success: result.success,
+      error: result.error,
+    });
   }
 
   private handleConfigUpdate(msg: { config: Partial<AgentConfig> }): void {
