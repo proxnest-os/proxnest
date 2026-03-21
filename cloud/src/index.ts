@@ -21,7 +21,7 @@ import jwt from '@fastify/jwt';
 import websocket from '@fastify/websocket';
 import rateLimit from '@fastify/rate-limit';
 import { config } from './config.js';
-import { initDatabase } from './db.js';
+import { initDatabase, db } from './db.js';
 import { agentPool } from './agent-pool.js';
 import { authRoutes } from './routes/auth.js';
 import { serverRoutes } from './routes/servers.js';
@@ -112,6 +112,50 @@ app.register(async function agentWsPlugin(fastify) {
       request.ip;
     app.log.info({ ip: publicIp }, 'Agent WebSocket connected');
     agentPool.handleConnection(socket as any, publicIp);
+  });
+});
+
+// ─── Client WebSocket Endpoint ────────────────────
+// Browser dashboard clients connect here for real-time updates (install progress, etc.)
+app.register(async function clientWsPlugin(fastify) {
+  fastify.get('/ws/client', { websocket: true }, async (socket, request) => {
+    const url = new URL(request.url, `http://${request.headers.host}`);
+    const token = url.searchParams.get('token');
+    const serverIdStr = url.searchParams.get('serverId');
+
+    if (!token || !serverIdStr) {
+      socket.close(4400, 'Missing token or serverId');
+      return;
+    }
+
+    // Verify JWT
+    let user: { id: number; email: string };
+    try {
+      user = app.jwt.verify<{ id: number; email: string }>(token);
+    } catch {
+      socket.close(4401, 'Invalid token');
+      return;
+    }
+
+    const serverId = parseInt(serverIdStr, 10);
+
+    // Verify user owns this server
+    const server = db.prepare(
+      'SELECT * FROM servers WHERE id = ? AND user_id = ?',
+    ).get(serverId, user.id) as any;
+
+    if (!server) {
+      socket.close(4404, 'Server not found');
+      return;
+    }
+
+    app.log.info({ userId: user.id, serverId }, 'Client WebSocket connected for install progress');
+
+    // Register this client to receive progress updates
+    agentPool.registerClient(socket as any, user.id, serverId, server.agent_id);
+
+    // Send initial ack
+    socket.send(JSON.stringify({ type: 'connected', serverId }));
   });
 });
 

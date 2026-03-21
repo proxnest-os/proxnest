@@ -32,7 +32,7 @@ export function useInstallProgress(serverId: number | null) {
   const [progress, setProgress] = useState<InstallProgress | null>(null);
   const [connected, setConnected] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimer = useRef<ReturnType<typeof setTimeout>>();
+  const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const connect = useCallback(() => {
     if (!serverId) return;
