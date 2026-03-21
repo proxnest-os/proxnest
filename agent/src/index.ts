@@ -24,6 +24,7 @@ import { MetricsCollector } from './collector.js';
 import { ConnectionManager } from './connection.js';
 import { CommandExecutor } from './commands.js';
 import { LocalApiServer } from './local-api.js';
+import { MetricsStore } from './metrics-store.js';
 import { randomUUID } from 'node:crypto';
 
 // ─── CLI Args ─────────────────────────────────────
@@ -98,7 +99,8 @@ const localOnly = args.includes('--local-only');
 // ─── Initialize Components ────────────────────────
 const identity = loadIdentity();
 const collector = new MetricsCollector(log);
-const commandExecutor = new CommandExecutor(log, collector);
+const metricsStore = new MetricsStore('/var/lib/proxnest/metrics.db', log, 7);
+const commandExecutor = new CommandExecutor(log, collector, metricsStore);
 
 log.info('═══════════════════════════════════════');
 log.info('  ProxNest Agent v0.1.0');
@@ -128,6 +130,20 @@ if (!localOnly) {
     return commandExecutor.execute(action, params);
   });
 
+  // Store heartbeat metrics for historical graphs
+  connection.onHeartbeat((metrics) => {
+    metricsStore.record({
+      cpu: metrics.cpu.usagePercent,
+      ramUsedMB: metrics.memory.usedMB,
+      ramTotalMB: metrics.memory.totalMB,
+      diskUsedGB: metrics.disk.usedGB,
+      diskTotalGB: metrics.disk.totalGB,
+      loadAvg: metrics.cpu.loadAvg,
+      guestsRunning: metrics.guestCount.running,
+      guestsStopped: metrics.guestCount.stopped,
+    });
+  });
+
   connection.connect();
 } else {
   log.info('Running in local-only mode (no cloud connection)');
@@ -154,6 +170,7 @@ async function shutdown(signal: string): Promise<void> {
 
   localApi.stop();
   if (connection) connection.disconnect();
+  metricsStore.close();
 
   log.info('Goodbye!');
   process.exit(0);

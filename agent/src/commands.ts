@@ -9,6 +9,7 @@ import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import type { Logger } from './logger.js';
 import { MetricsCollector } from './collector.js';
 import { getAppConfig, type AppConfig } from './app-catalog.js';
+import type { MetricsStore } from './metrics-store.js';
 
 interface CommandResult {
   success: boolean;
@@ -19,10 +20,12 @@ interface CommandResult {
 export class CommandExecutor {
   private log: Logger;
   private collector: MetricsCollector;
+  private metricsStore: MetricsStore | null;
 
-  constructor(logger: Logger, collector: MetricsCollector) {
+  constructor(logger: Logger, collector: MetricsCollector, metricsStore?: MetricsStore) {
     this.log = logger;
     this.collector = collector;
+    this.metricsStore = metricsStore ?? null;
   }
 
   async execute(action: string, params: Record<string, unknown>): Promise<CommandResult> {
@@ -35,6 +38,9 @@ export class CommandExecutor {
 
       case 'system.metrics':
         return { success: true, data: this.collector.collectFull() };
+
+      case 'metrics.history':
+        return this.metricsHistory(params);
 
       case 'system.reboot':
         return this.reboot();
@@ -186,6 +192,28 @@ export class CommandExecutor {
 
       default:
         return { success: false, error: `Unknown action: ${action}` };
+    }
+  }
+
+  // ─── Metrics History ─────────────────────────
+
+  private metricsHistory(params: Record<string, unknown>): CommandResult {
+    if (!this.metricsStore) {
+      return { success: false, error: 'Metrics store not available' };
+    }
+    const range = (params.range as string) || '24h';
+    const maxPoints = Math.min(Math.max((params.maxPoints as number) || 300, 10), 1000);
+
+    // Validate range format
+    if (!/^\d+[hmd]$/.test(range)) {
+      return { success: false, error: 'Invalid range format. Use e.g. 1h, 6h, 24h, 7d' };
+    }
+
+    try {
+      const result = this.metricsStore.query(range, maxPoints);
+      return { success: true, data: result };
+    } catch (err) {
+      return { success: false, error: err instanceof Error ? err.message : String(err) };
     }
   }
 

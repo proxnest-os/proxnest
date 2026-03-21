@@ -13,16 +13,18 @@
     "install-service": "node dist/install-service.js"
   },
   "dependencies": {
-    "ws": "^8.18.0",
-    "undici": "^7.5.0",
-    "zod": "^3.24.2",
+    "better-sqlite3": "^12.8.0",
     "pino": "^9.6.0",
-    "pino-pretty": "^13.0.0"
+    "pino-pretty": "^13.0.0",
+    "undici": "^7.5.0",
+    "ws": "^8.18.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
-    "typescript": "^5.7.3",
-    "tsx": "^4.19.3",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.13.10",
-    "@types/ws": "^8.5.14"
+    "@types/ws": "^8.5.14",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
   }
 }

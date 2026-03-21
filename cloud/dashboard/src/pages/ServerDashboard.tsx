@@ -18,16 +18,18 @@ import {
   Brain, Filter, SortAsc, SortDesc, Archive, Trash2, DownloadCloud, History,
   Users, UserPlus, UserMinus, Crown, ShieldCheck, Eye as EyeIcon, Wrench as WrenchIcon,
   Bell, BellRing, Send, TestTube, ToggleLeft, ToggleRight,
+  BarChart3,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useInstallProgress } from '../hooks/useInstallProgress';
 import { InstallProgressModal } from '../components/InstallProgressModal';
 import { AppLogsModal } from '../components/AppLogsModal';
 import { ContainerConsole } from '../components/ContainerConsole';
+import { ResourceGraphs } from '../components/ResourceGraphs';
 
 // ─── Types ───────────────────────────────────────
 
-type Tab = 'overview' | 'guests' | 'apps' | 'storage' | 'backups' | 'members' | 'firewall' | 'system' | 'settings' | 'network' | 'logs' | 'notifications';
+type Tab = 'overview' | 'guests' | 'apps' | 'storage' | 'backups' | 'members' | 'firewall' | 'system' | 'settings' | 'network' | 'logs' | 'notifications' | 'graphs';
 
 interface GuestInfo {
   vmid: number;
@@ -1880,6 +1882,7 @@ export function ServerDashboardPage() {
             <TabButton active={activeTab === 'system'} onClick={() => setActiveTab('system')} icon={Settings} label="System" />
             <TabButton active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} icon={Wrench} label="Settings" />
             <TabButton active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} icon={Bell} label="Alerts" badge={notifRules.filter(r => r.enabled).length || undefined} />
+            <TabButton active={activeTab === 'graphs'} onClick={() => setActiveTab('graphs')} icon={BarChart3} label="Graphs" />
             <TabButton active={activeTab === 'network'} onClick={() => setActiveTab('network')} icon={Network} label="Network" />
             <TabButton active={activeTab === 'logs'} onClick={() => setActiveTab('logs')} icon={ScrollText} label="Logs" />
           </div>
@@ -4221,6 +4224,11 @@ export function ServerDashboardPage() {
               </div>
             );
           })()}
+
+          {/* ═══ Graphs Tab ══════════════════════ */}
+          {activeTab === 'graphs' && (
+            <ResourceGraphs serverId={serverId} />
+          )}
 
           {/* ═══ Network Tab ═════════════════════ */}
           {activeTab === 'network' && (
