@@ -157,6 +157,17 @@ app.register(async function clientWsPlugin(fastify) {
     // Register this client to receive progress updates
     agentPool.registerClient(socket as any, user.id, serverId, server.agent_id);
 
+    // Forward client messages to agent (terminal sessions, etc.)
+    socket.on('message', (data: any) => {
+      try {
+        const msg = JSON.parse(typeof data === 'string' ? data : data.toString());
+        // Forward terminal messages directly to agent
+        if (typeof msg.type === 'string' && msg.type.startsWith('terminal_')) {
+          agentPool.sendToAgent(server.agent_id, msg);
+        }
+      } catch { /* ignore malformed messages */ }
+    });
+
     // Send initial ack
     socket.send(JSON.stringify({ type: 'connected', serverId }));
   });

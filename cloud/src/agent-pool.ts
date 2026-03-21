@@ -52,6 +52,9 @@ type AgentMessage =
   | { type: 'command_result'; agentId: string; commandId: string; success: boolean; data?: unknown; error?: string }
   | { type: 'proxy_response'; requestId: string; status: number; headers: Record<string, string>; body: string }
   | { type: 'install_progress'; agentId: string; data: Record<string, unknown> }
+  | { type: 'terminal_data'; agentId: string; sessionId: string; data: string }
+  | { type: 'terminal_exit'; agentId: string; sessionId: string; code: number | null }
+  | { type: 'terminal_opened'; agentId: string; sessionId: string; success: boolean; error?: string }
   | { type: 'pong' };
 
 /** Client WebSocket connection (browser dashboard user) */
@@ -116,6 +119,11 @@ class AgentPool {
           break;
         case 'install_progress':
           if (agentId) this.broadcastToClients(agentId, { type: 'install_progress', data: msg.data });
+          break;
+        case 'terminal_data':
+        case 'terminal_exit':
+        case 'terminal_opened':
+          if (agentId) this.broadcastToClients(agentId, msg);
           break;
         case 'proxy_response':
           if (agentId) this.handleProxyResponse(agentId, msg);

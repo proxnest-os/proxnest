@@ -23,6 +23,7 @@ import { clsx } from 'clsx';
 import { useInstallProgress } from '../hooks/useInstallProgress';
 import { InstallProgressModal } from '../components/InstallProgressModal';
 import { AppLogsModal } from '../components/AppLogsModal';
+import { ContainerConsole } from '../components/ContainerConsole';
 
 // ─── Types ───────────────────────────────────────
 
@@ -394,10 +395,11 @@ function TabButton({ active, onClick, icon: Icon, label, badge }: {
 
 // ─── Guest Row (Enhanced) ────────────────────────
 
-function GuestRow({ guest, onAction, loading }: {
+function GuestRow({ guest, onAction, loading, onConsole }: {
   guest: GuestInfo;
   onAction: (vmid: number, type: string, action: string) => void;
   loading: boolean;
+  onConsole?: (vmid: number, type: 'lxc' | 'qemu', name: string) => void;
 }) {
   const isRunning = guest.status === 'running';
   const memGB = (guest.memoryMB / 1024).toFixed(1);
@@ -475,6 +477,15 @@ function GuestRow({ guest, onAction, loading }: {
             <Loader2 size={16} className="animate-spin text-nest-400" />
           ) : isRunning ? (
             <>
+              {onConsole && (
+                <button
+                  onClick={() => onConsole(guest.vmid, guest.type as 'lxc' | 'qemu', guest.name)}
+                  className="p-2 rounded-lg text-nest-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all"
+                  title="Open Console"
+                >
+                  <Terminal size={14} />
+                </button>
+              )}
               <button
                 onClick={() => onAction(guest.vmid, guest.type, 'restart')}
                 className="p-2 rounded-lg text-nest-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all"
@@ -1099,6 +1110,7 @@ export function ServerDashboardPage() {
   const [guestSort, setGuestSort] = useState<GuestSort>('status');
   const [guestSortDir, setGuestSortDir] = useState<'asc' | 'desc'>('asc');
   const [logsApp, setLogsApp] = useState<{ id: string; name: string; icon?: string } | null>(null);
+  const [consoleGuest, setConsoleGuest] = useState<{ vmid: number; type: 'lxc' | 'qemu'; name: string } | null>(null);
 
   // Settings state
   interface ServerSettings {
@@ -1825,6 +1837,17 @@ export function ServerDashboardPage() {
         />
       )}
 
+      {/* ─── Container Console Modal ─────────────── */}
+      {consoleGuest && (
+        <ContainerConsole
+          serverId={serverId}
+          vmid={consoleGuest.vmid}
+          guestType={consoleGuest.type}
+          guestName={consoleGuest.name}
+          onClose={() => setConsoleGuest(null)}
+        />
+      )}
+
       {/* ─── Offline State ──────────────────────── */}
       {!server.is_online && (
         <div className="glass rounded-2xl p-12 text-center glow-border">
@@ -1965,6 +1988,7 @@ export function ServerDashboardPage() {
                           guest={g}
                           onAction={handleGuestAction}
                           loading={actionLoading === g.vmid}
+                          onConsole={(vmid, type, name) => setConsoleGuest({ vmid, type, name })}
                         />
                       ))}
                       {guests.length > 5 && (
@@ -2064,6 +2088,7 @@ export function ServerDashboardPage() {
                       guest={g}
                       onAction={handleGuestAction}
                       loading={actionLoading === g.vmid}
+                      onConsole={(vmid, type, name) => setConsoleGuest({ vmid, type, name })}
                     />
                   ))}
                 </div>
