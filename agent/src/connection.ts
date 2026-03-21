@@ -54,6 +54,7 @@ export class ConnectionManager {
   private collector: MetricsCollector;
   private log: Logger;
   private commandHandler: CommandHandler | null = null;
+  private heartbeatHandler: ((metrics: HeartbeatMetrics) => void) | null = null;
 
   private terminalService: TerminalService;
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
@@ -99,6 +100,10 @@ export class ConnectionManager {
   // ─── Public API ─────────────────────────────
   onCommand(handler: CommandHandler): void {
     this.commandHandler = handler;
+  }
+
+  onHeartbeat(handler: (metrics: HeartbeatMetrics) => void): void {
+    this.heartbeatHandler = handler;
   }
 
   connect(): void {
@@ -381,6 +386,10 @@ export class ConnectionManager {
         agentId: this.identity.agentId,
         metrics,
       });
+      // Notify heartbeat handler (for metrics storage)
+      if (this.heartbeatHandler) {
+        try { this.heartbeatHandler(metrics); } catch { /* ignore */ }
+      }
     } catch (err) {
       this.log.error({ err }, 'Failed to collect heartbeat metrics');
     }
