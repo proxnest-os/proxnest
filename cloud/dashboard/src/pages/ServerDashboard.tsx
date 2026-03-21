@@ -18,6 +18,8 @@ import {
   Brain, Filter, SortAsc, SortDesc,
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useInstallProgress } from '../hooks/useInstallProgress';
+import { InstallProgressModal } from '../components/InstallProgressModal';
 
 // ─── Types ───────────────────────────────────────
 
@@ -988,6 +990,8 @@ export function ServerDashboardPage() {
   // UI state
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [installingApp, setInstallingApp] = useState<string | null>(null);
+  const [installingAppMeta, setInstallingAppMeta] = useState<{ name: string; icon?: string } | null>(null);
+  const [showProgressModal, setShowProgressModal] = useState(false);
   const [appSearch, setAppSearch] = useState('');
   const [appCategory, setAppCategory] = useState('all');
   const [appFilter, setAppFilter] = useState<'all' | 'installed'>('all');
@@ -995,6 +999,9 @@ export function ServerDashboardPage() {
   const [selectedApp, setSelectedApp] = useState<AppTemplate | null>(null);
   const [guestSort, setGuestSort] = useState<GuestSort>('status');
   const [guestSortDir, setGuestSortDir] = useState<'asc' | 'desc'>('asc');
+
+  // ─── Install progress WebSocket ────────────
+  const { progress: installProgress, clearProgress } = useInstallProgress(serverId || null);
 
   // ─── Fetch core server data ────────────────
 
@@ -1144,9 +1151,13 @@ export function ServerDashboardPage() {
 
   const handleAppInstall = async (app: AppTemplate) => {
     setInstallingApp(app.id);
+    setInstallingAppMeta({ name: app.name, icon: app.icon });
+    setShowProgressModal(true);
     setInstallMessage(null);
+    clearProgress();
     try {
       // Send just the appId — agent looks it up from its own catalog
+      // Agent streams progress via WebSocket, final result comes here
       const result = await api.sendCommand(serverId, 'apps.install', { appId: app.id });
       if (result.success) {
         const data = result.data as any;
@@ -1166,8 +1177,16 @@ export function ServerDashboardPage() {
       setInstallMessage({ type: 'error', text: err instanceof Error ? err.message : 'Installation failed' });
     } finally {
       setInstallingApp(null);
-      setTimeout(() => setInstallMessage(null), 8000);
+      // Don't auto-close the progress modal — let user dismiss it
     }
+  };
+
+  const handleCloseProgressModal = () => {
+    setShowProgressModal(false);
+    setInstallingAppMeta(null);
+    clearProgress();
+    // Clear the success/error message after a delay
+    setTimeout(() => setInstallMessage(null), 5000);
   };
 
   const handleAppAction = async (appId: string, action: 'start' | 'stop' | 'uninstall') => {
@@ -1373,6 +1392,16 @@ export function ServerDashboardPage() {
           installing={installingApp === selectedApp.id}
           onClose={() => setSelectedApp(null)}
           onAction={handleAppAction}
+        />
+      )}
+
+      {/* ─── Install Progress Modal ───────────── */}
+      {showProgressModal && installingAppMeta && installProgress && (
+        <InstallProgressModal
+          appName={installingAppMeta.name}
+          appIcon={installingAppMeta.icon}
+          progress={installProgress}
+          onClose={handleCloseProgressModal}
         />
       )}
 

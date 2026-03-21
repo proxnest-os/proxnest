@@ -51,12 +51,21 @@ type AgentMessage =
   | { type: 'metrics'; agentId: string; metrics: Record<string, unknown> }
   | { type: 'command_result'; agentId: string; commandId: string; success: boolean; data?: unknown; error?: string }
   | { type: 'proxy_response'; requestId: string; status: number; headers: Record<string, string>; body: string }
+  | { type: 'install_progress'; agentId: string; data: Record<string, unknown> }
   | { type: 'pong' };
+
+/** Client WebSocket connection (browser dashboard user) */
+interface ClientConnection {
+  ws: WebSocket;
+  userId: number;
+  serverId: number;
+}
 
 // ─── Pool ────────────────────────────────────────
 
 class AgentPool {
   private agents = new Map<string, AgentConnection>();
+  private clients = new Map<string, ClientConnection[]>(); // agentId → client WS list
   private cleanupTimer: ReturnType<typeof setInterval> | null = null;
 
   start(): void {
@@ -104,6 +113,9 @@ class AgentPool {
           break;
         case 'command_result':
           if (agentId) this.handleCommandResult(agentId, msg);
+          break;
+        case 'install_progress':
+          if (agentId) this.broadcastToClients(agentId, { type: 'install_progress', data: msg.data });
           break;
         case 'proxy_response':
           if (agentId) this.handleProxyResponse(agentId, msg);
@@ -285,6 +297,42 @@ class AgentPool {
     }
   }
 
+  // ─── Client WebSocket Management ──────────────
+
+  /** Register a browser client to receive real-time updates for a specific server/agent */
+  registerClient(ws: WebSocket, userId: number, serverId: number, agentId: string): void {
+    const client: ClientConnection = { ws, userId, serverId };
+    const list = this.clients.get(agentId) || [];
+    list.push(client);
+    this.clients.set(agentId, list);
+
+    ws.on('close', () => this.removeClient(agentId, ws));
+    ws.on('error', () => this.removeClient(agentId, ws));
+  }
+
+  private removeClient(agentId: string, ws: WebSocket): void {
+    const list = this.clients.get(agentId);
+    if (!list) return;
+    const filtered = list.filter(c => c.ws !== ws);
+    if (filtered.length === 0) {
+      this.clients.delete(agentId);
+    } else {
+      this.clients.set(agentId, filtered);
+    }
+  }
+
+  /** Broadcast a message to all browser clients watching this agent */
+  private broadcastToClients(agentId: string, msg: Record<string, unknown>): void {
+    const list = this.clients.get(agentId);
+    if (!list || list.length === 0) return;
+    const payload = JSON.stringify(msg);
+    for (const client of list) {
+      if (client.ws.readyState === client.ws.OPEN) {
+        client.ws.send(payload);
+      }
+    }
+  }
+
   // ─── Public API ───────────────────────────────
 
   isOnline(agentId: string): boolean {
@@ -367,6 +415,14 @@ class AgentPool {
 
   getConnectedCount(): number {
     return this.agents.size;
+  }
+
+  /** Look up which agentId is associated with a given server connection */
+  getAgentIdForServerId(serverId: number): string | null {
+    for (const conn of this.agents.values()) {
+      if (conn.serverId === serverId) return conn.agentId;
+    }
+    return null;
   }
 
   // ─── Cleanup ──────────────────────────────────
