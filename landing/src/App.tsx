@@ -3,8 +3,8 @@ import { motion } from 'framer-motion'
 import {
   Server, Shield, Zap, HardDrive, Layout, Users,
   ChevronRight, Check, ArrowRight, Menu, X, Github, Twitter,
-  Cpu, Globe, Box, Download,
-  Terminal, Gauge, Star
+  Box, Download,
+  Terminal, Star
 } from 'lucide-react'
 
 // Animation variants
