@@ -512,17 +512,22 @@ export class CommandExecutor {
 
 
   private getHostIp(): string {
-    if (process.env.PROXMOX_HOST) {
-      // Strip protocol/port if present
-      return process.env.PROXMOX_HOST.replace(/^https?:\/\//, '').replace(/:\d+$/, '');
-    }
+    // Always prefer the real network IP, not PROXMOX_HOST (which may be 127.0.0.1)
+    try {
+      const out = execSync(
+        "ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}'",
+        { encoding: 'utf-8', timeout: 5_000 },
+      );
+      const ip = out.trim();
+      if (ip && ip !== '127.0.0.1') return ip;
+    } catch { /* ignore */ }
     try {
       const out = execSync(
         "ip -4 addr show scope global | grep -oP '(?<=inet )\\S+' | head -1 | cut -d/ -f1",
         { encoding: 'utf-8', timeout: 5_000 },
       );
       const ip = out.trim();
-      if (ip) return ip;
+      if (ip && ip !== '127.0.0.1') return ip;
     } catch { /* ignore */ }
     return '0.0.0.0';
   }
