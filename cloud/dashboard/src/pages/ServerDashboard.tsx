@@ -1327,6 +1327,16 @@ export function ServerDashboardPage() {
   const [showRollbackConfirm, setShowRollbackConfirm] = useState<SnapshotInfo | null>(null);
   const [snapshotFilter, setSnapshotFilter] = useState<number | 'all'>('all');
 
+  // VPN state
+  interface VpnStatus { active: boolean; provider?: string; publicIp?: string; server?: string; uptime?: number }
+  const [vpnStatus, setVpnStatus] = useState<VpnStatus | null>(null);
+  const [vpnLoading, setVpnLoading] = useState(false);
+  const [vpnActionLoading, setVpnActionLoading] = useState(false);
+  const [vpnUploading, setVpnUploading] = useState(false);
+  const [vpnMessage, setVpnMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [vpnSelectedProvider, setVpnSelectedProvider] = useState<string | null>(null);
+  const [vpnDragOver, setVpnDragOver] = useState(false);
+
   // Getting Started & Recommendations state
   interface GettingStartedStep { step: string; done: boolean; priority: 'high' | 'medium' | 'low' }
   interface AppRecommendation { appId: string; reason: string }
@@ -1779,6 +1789,86 @@ export function ServerDashboardPage() {
     } catch { /* ignore */ }
   }, [serverId, fetchNotifBell]);
 
+  // ─── VPN actions ─────────────────────────────
+
+  const fetchVpnStatus = useCallback(async () => {
+    setVpnLoading(true);
+    try {
+      const result = await api.sendCommand(serverId, 'vpn.status', {});
+      if (result.success && result.data) {
+        setVpnStatus(result.data as VpnStatus);
+      }
+    } catch { /* ignore */ }
+    setVpnLoading(false);
+  }, [serverId]);
+
+  const handleVpnStart = useCallback(async () => {
+    setVpnActionLoading(true);
+    setVpnMessage(null);
+    try {
+      const result = await api.sendCommand(serverId, 'vpn.start', {});
+      if (result.success) {
+        setVpnMessage({ type: 'success', text: 'VPN started successfully' });
+        fetchVpnStatus();
+      } else {
+        setVpnMessage({ type: 'error', text: result.error || 'Failed to start VPN' });
+      }
+    } catch (err) {
+      setVpnMessage({ type: 'error', text: err instanceof Error ? err.message : 'Failed to start VPN' });
+    }
+    setVpnActionLoading(false);
+    setTimeout(() => setVpnMessage(null), 5000);
+  }, [serverId, fetchVpnStatus]);
+
+  const handleVpnStop = useCallback(async () => {
+    setVpnActionLoading(true);
+    setVpnMessage(null);
+    try {
+      const result = await api.sendCommand(serverId, 'vpn.stop', {});
+      if (result.success) {
+        setVpnMessage({ type: 'success', text: 'VPN stopped' });
+        fetchVpnStatus();
+      } else {
+        setVpnMessage({ type: 'error', text: result.error || 'Failed to stop VPN' });
+      }
+    } catch (err) {
+      setVpnMessage({ type: 'error', text: err instanceof Error ? err.message : 'Failed to stop VPN' });
+    }
+    setVpnActionLoading(false);
+    setTimeout(() => setVpnMessage(null), 5000);
+  }, [serverId, fetchVpnStatus]);
+
+  const handleVpnFileUpload = useCallback(async (file: File) => {
+    if (!file.name.endsWith('.ovpn')) {
+      setVpnMessage({ type: 'error', text: 'Please upload a .ovpn configuration file' });
+      setTimeout(() => setVpnMessage(null), 5000);
+      return;
+    }
+    setVpnUploading(true);
+    setVpnMessage(null);
+    try {
+      const config = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsText(file);
+      });
+      const provider = vpnSelectedProvider || 'custom';
+      const result = await api.sendCommand(serverId, 'vpn.setup', { config, provider });
+      if (result.success) {
+        setVpnMessage({ type: 'success', text: `VPN configured with ${provider} profile` });
+        setVpnSelectedProvider(null);
+        fetchVpnStatus();
+      } else {
+        setVpnMessage({ type: 'error', text: result.error || 'VPN setup failed' });
+      }
+    } catch (err) {
+      setVpnMessage({ type: 'error', text: err instanceof Error ? err.message : 'VPN setup failed' });
+    }
+    setVpnUploading(false);
+    setTimeout(() => setVpnMessage(null), 5000);
+  }, [serverId, vpnSelectedProvider, fetchVpnStatus]);
+
   // ─── Initial + periodic fetch ──────────────
 
   useEffect(() => {
@@ -1814,7 +1904,7 @@ export function ServerDashboardPage() {
       case 'notifications': fetchNotifications(); break;
       case 'logs': fetchLogs(); break;
     }
-  }, [activeTab, server?.is_online, fetchGuests, fetchStorage, fetchNetwork, fetchApps, fetchLogs, fetchMembers, fetchSettings, fetchNotifications, fetchSnapshots, fetchGettingStarted, fetchRecommendations]);
+  }, [activeTab, server?.is_online, fetchGuests, fetchStorage, fetchNetwork, fetchApps, fetchLogs, fetchMembers, fetchSettings, fetchNotifications, fetchSnapshots, fetchGettingStarted, fetchRecommendations, fetchVpnStatus]);
 
   // ─── Actions ───────────────────────────────
 
@@ -1835,7 +1925,7 @@ export function ServerDashboardPage() {
         case 'settings': await fetchSettings(); break;
         case 'notifications': await fetchNotifications(); break;
         case 'logs': await fetchLogs(); break;
-        case 'system': fetchUpdates(); break;
+        case 'system': fetchUpdates(); fetchVpnStatus(); break;
       }
     }
     setRefreshing(false);
@@ -6636,6 +6726,150 @@ export function ServerDashboardPage() {
                   >
                     <Terminal size={12} /> Open Terminal
                   </button>
+                </div>
+              </div>
+
+              {/* ─── VPN Setup ──────────────────────── */}
+              <div className="glass rounded-xl p-5 glow-border">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className={clsx(
+                      'p-2 rounded-lg border',
+                      vpnStatus?.active
+                        ? 'bg-emerald-500/10 border-emerald-500/20'
+                        : 'bg-nest-800/60 border-nest-700/30',
+                    )}>
+                      <Shield size={18} className={vpnStatus?.active ? 'text-emerald-400' : 'text-nest-400'} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-white">VPN</p>
+                        {vpnLoading ? (
+                          <Loader2 size={12} className="animate-spin text-nest-400" />
+                        ) : vpnStatus?.active ? (
+                          <span className="flex items-center gap-1.5 text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-medium">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            VPN Active
+                          </span>
+                        ) : (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-nest-800 text-nest-500 font-medium">
+                            VPN Not Configured
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-nest-500">
+                        {vpnStatus?.active
+                          ? `${vpnStatus.provider || 'Custom'} • ${vpnStatus.publicIp || 'connected'}${vpnStatus.uptime ? ` • Up ${formatUptime(vpnStatus.uptime)}` : ''}`
+                          : 'Upload an .ovpn config to route traffic through VPN'}
+                      </p>
+                    </div>
+                  </div>
+                  {vpnStatus?.active && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleVpnStop}
+                        disabled={vpnActionLoading}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/10 transition-all disabled:opacity-50"
+                      >
+                        {vpnActionLoading ? <Loader2 size={12} className="animate-spin" /> : <Square size={12} />}
+                        Stop
+                      </button>
+                    </div>
+                  )}
+                  {vpnStatus && !vpnStatus.active && vpnStatus.provider && (
+                    <button
+                      onClick={handleVpnStart}
+                      disabled={vpnActionLoading}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/10 transition-all disabled:opacity-50"
+                    >
+                      {vpnActionLoading ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} />}
+                      Start
+                    </button>
+                  )}
+                </div>
+
+                {/* VPN Message */}
+                {vpnMessage && (
+                  <div className={clsx(
+                    'rounded-lg px-3 py-2 text-xs mb-4 flex items-center gap-2',
+                    vpnMessage.type === 'success'
+                      ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                      : 'bg-rose-500/10 border border-rose-500/20 text-rose-400',
+                  )}>
+                    {vpnMessage.type === 'success' ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
+                    {vpnMessage.text}
+                  </div>
+                )}
+
+                {/* Provider Quick-Select */}
+                <div className="mb-4">
+                  <p className="text-[10px] text-nest-500 uppercase tracking-wider font-semibold mb-2">VPN Provider</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {['AirVPN', 'Mullvad', 'NordVPN', 'ProtonVPN', 'Surfshark', 'PIA', 'Windscribe'].map(provider => (
+                      <button
+                        key={provider}
+                        onClick={() => setVpnSelectedProvider(vpnSelectedProvider === provider.toLowerCase() ? null : provider.toLowerCase())}
+                        className={clsx(
+                          'text-[11px] px-3 py-1.5 rounded-lg font-medium transition-all border',
+                          vpnSelectedProvider === provider.toLowerCase()
+                            ? 'bg-nest-500/20 text-white border-nest-400/30'
+                            : 'bg-nest-800/40 text-nest-400 border-nest-700/20 hover:text-white hover:bg-nest-700/40',
+                        )}
+                      >
+                        {provider}
+                      </button>
+                    ))}
+                  </div>
+                  {vpnSelectedProvider && (
+                    <p className="text-xs text-nest-400 mt-2 flex items-center gap-1.5">
+                      <Info size={11} className="text-nest-500" />
+                      Upload your .ovpn config file from <span className="text-white font-medium capitalize">{vpnSelectedProvider}</span>
+                    </p>
+                  )}
+                </div>
+
+                {/* File Upload Area */}
+                <div
+                  onDragOver={e => { e.preventDefault(); setVpnDragOver(true); }}
+                  onDragLeave={() => setVpnDragOver(false)}
+                  onDrop={e => {
+                    e.preventDefault();
+                    setVpnDragOver(false);
+                    const file = e.dataTransfer.files[0];
+                    if (file) handleVpnFileUpload(file);
+                  }}
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.ovpn';
+                    input.onchange = (e) => {
+                      const file = (e.target as HTMLInputElement).files?.[0];
+                      if (file) handleVpnFileUpload(file);
+                    };
+                    input.click();
+                  }}
+                  className={clsx(
+                    'relative rounded-xl border-2 border-dashed p-6 text-center cursor-pointer transition-all',
+                    vpnDragOver
+                      ? 'border-nest-400/60 bg-nest-500/10'
+                      : 'border-nest-700/40 hover:border-nest-500/40 hover:bg-nest-800/20',
+                    vpnUploading && 'opacity-60 pointer-events-none',
+                  )}
+                >
+                  {vpnUploading ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 size={24} className="animate-spin text-nest-400" />
+                      <p className="text-sm text-nest-300">Uploading configuration…</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <UploadCloud size={24} className={vpnDragOver ? 'text-nest-300' : 'text-nest-500'} />
+                      <p className="text-sm text-nest-300">
+                        {vpnDragOver ? 'Drop .ovpn file here' : 'Drag & drop .ovpn file or click to browse'}
+                      </p>
+                      <p className="text-[10px] text-nest-500">Only .ovpn configuration files are accepted</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
