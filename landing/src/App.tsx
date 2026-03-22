@@ -100,7 +100,7 @@ function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Dashboard Preview */}
+        {/* Real Dashboard Screenshots */}
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -109,48 +109,17 @@ function Hero() {
         >
           <div className="glass rounded-2xl glow-border p-1">
             <div className="bg-nest-800 rounded-xl overflow-hidden">
-              {/* Mock titlebar */}
               <div className="flex items-center gap-2 px-4 py-3 border-b border-nest-700">
                 <div className="w-3 h-3 rounded-full bg-rose-400" />
                 <div className="w-3 h-3 rounded-full bg-amber-400" />
                 <div className="w-3 h-3 rounded-full bg-green-400" />
-                <span className="ml-3 text-xs text-nest-400">proxnest.local — Dashboard</span>
+                <span className="ml-3 text-xs text-nest-400">cloud.proxnest.com — Dashboard</span>
               </div>
-              {/* Mock dashboard content */}
-              <div className="p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">System Overview</h3>
-                  <span className="text-xs text-green-400 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-400 inline-block" /> All systems healthy</span>
-                </div>
-                <div className="grid grid-cols-4 gap-3">
-                  {[
-                    { label: 'CPU', value: '23%', icon: Cpu, color: 'text-accent-400' },
-                    { label: 'RAM', value: '8.2 / 32 GB', icon: Gauge, color: 'text-green-400' },
-                    { label: 'Storage', value: '2.1 / 12 TB', icon: HardDrive, color: 'text-amber-400' },
-                    { label: 'Network', value: '↓ 45 MB/s', icon: Globe, color: 'text-rose-400' },
-                  ].map(s => (
-                    <div key={s.label} className="bg-nest-700/50 rounded-lg p-3 text-center">
-                      <s.icon size={18} className={`mx-auto mb-1 ${s.color}`} />
-                      <div className="text-xs text-nest-400">{s.label}</div>
-                      <div className="text-sm font-medium">{s.value}</div>
-                    </div>
-                  ))}
-                </div>
-                {/* Mock app grid */}
-                <div>
-                  <h4 className="text-sm font-medium text-nest-300 mb-2">Running Apps</h4>
-                  <div className="grid grid-cols-5 gap-2">
-                    {['Plex', 'Radarr', 'Sonarr', 'Nextcloud', 'Pi-hole'].map(app => (
-                      <div key={app} className="bg-nest-700/30 rounded-lg p-2 text-center">
-                        <div className="w-8 h-8 mx-auto mb-1 rounded-lg bg-accent-500/20 flex items-center justify-center">
-                          <Box size={14} className="text-accent-400" />
-                        </div>
-                        <span className="text-xs text-nest-300">{app}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <img
+                src="/screenshots/ss-overview.png"
+                alt="ProxNest Cloud Dashboard — Overview with system stats, quick actions, and getting started checklist"
+                className="w-full"
+              />
             </div>
           </div>
           <div className="absolute -z-10 top-8 left-8 right-8 bottom-0 bg-accent-500/5 rounded-2xl blur-xl" />
@@ -233,6 +202,69 @@ function Features() {
               <p className="text-nest-400 leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+// --- SCREENSHOT GALLERY ---
+const screenshots = [
+  { src: '/screenshots/ss-overview.png', label: 'Dashboard Overview', desc: 'System stats, quick actions, getting started guide' },
+  { src: '/screenshots/ss-system.png', label: 'System Management', desc: 'Services, updates, web terminal access' },
+  { src: '/screenshots/ss-storage.png', label: 'Storage Wizard', desc: 'Detect disks, manage pools, assign roles' },
+  { src: '/screenshots/ss-fleet.png', label: 'Fleet Management', desc: 'Monitor all your servers from one dashboard' },
+]
+
+function Screenshots() {
+  const [active, setActive] = useState(0)
+  return (
+    <section className="py-32 bg-nest-800/30">
+      <div className="max-w-7xl mx-auto px-6">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-12">
+          <motion.h2 variants={fadeUp} className="text-4xl lg:text-5xl font-bold mb-4">
+            See it in <span className="gradient-text">action.</span>
+          </motion.h2>
+          <motion.p variants={fadeUp} className="text-xl text-nest-400">
+            Real screenshots from a real ProxNest server. No mockups.
+          </motion.p>
+        </motion.div>
+
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
+          {/* Tab buttons */}
+          <div className="flex justify-center gap-3 mb-8">
+            {screenshots.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => setActive(i)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  active === i
+                    ? 'bg-accent-500/20 text-accent-400 border border-accent-500/30'
+                    : 'text-nest-400 hover:text-white hover:bg-nest-700/50'
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Screenshot display */}
+          <div className="glass rounded-2xl glow-border p-1 max-w-5xl mx-auto">
+            <div className="bg-nest-800 rounded-xl overflow-hidden">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-nest-700">
+                <div className="w-3 h-3 rounded-full bg-rose-400" />
+                <div className="w-3 h-3 rounded-full bg-amber-400" />
+                <div className="w-3 h-3 rounded-full bg-green-400" />
+                <span className="ml-3 text-xs text-nest-400">cloud.proxnest.com — {screenshots[active].label}</span>
+              </div>
+              <img
+                src={screenshots[active].src}
+                alt={screenshots[active].desc}
+                className="w-full transition-opacity duration-300"
+              />
+            </div>
+          </div>
+          <p className="text-center text-nest-400 text-sm mt-4">{screenshots[active].desc}</p>
         </motion.div>
       </div>
     </section>
@@ -583,6 +615,7 @@ export default function App() {
       <Navbar />
       <Hero />
       <Features />
+      <Screenshots />
       <AppStore />
       <Comparison />
       <Pricing />
