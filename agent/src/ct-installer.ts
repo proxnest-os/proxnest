@@ -286,13 +286,11 @@ export async function installAppCt(
     log.info({ vmid, image: appConfig.image }, 'Pulling and running app...');
     pctExec(vmid, `docker pull ${appConfig.image} 2>&1 | tail -1`, 300000);
 
-    let dockerCmd = `docker run -d --name ${appId} --restart unless-stopped --privileged`;
+    // Use --network host to avoid Docker bridge iptables issues in LXC
+    let dockerCmd = `docker run -d --name ${appId} --restart unless-stopped --privileged --network host`;
 
-    // Port mapping — expose on CT's port (direct, since CT has its own IP)
     const webPort = Object.values(appConfig.ports)[0] || 8080;
-    for (const [, containerPort] of Object.entries(appConfig.ports)) {
-      dockerCmd += ` -p ${containerPort}:${containerPort}`;
-    }
+    // With --network host, no -p flags needed — app binds directly to CT's network
 
     // Volume mounts
     for (const [hostPath, containerPath] of Object.entries(appConfig.volumes)) {
