@@ -90,6 +90,12 @@ export const APP_STACKS: Record<string, { name: string; description: string; ico
     icon: '💻',
     apps: ['gitea', 'portainer', 'codeserver'],
   },
+  'usenet': {
+    name: 'Usenet Stack',
+    description: 'Complete Usenet download pipeline',
+    icon: '📥',
+    apps: ['sabnzbd', 'nzbhydra2', 'radarr', 'sonarr', 'prowlarr', 'bazarr'],
+  },
 };
 
 const BASE_DIR = '/opt/proxnest-apps';
@@ -242,6 +248,43 @@ export const APP_CATALOG: AppConfig[] = [
     },
     env: { PUID: '0', PGID: '0' },
     connectsTo: ['radarr', 'sonarr'],
+  },
+
+  {
+    id: 'sabnzbd', name: 'SABnzbd',
+    description: 'Usenet binary newsreader',
+    category: 'Downloads', icon: '📥',
+    image: 'lscr.io/linuxserver/sabnzbd:latest',
+    ports: { 8080: 8080 },
+    volumes: {
+      [`${BASE_DIR}/sabnzbd/config`]: '/config',
+      [D.downloads]: '/downloads',
+    },
+    env: { PUID: '0', PGID: '0' },
+  },
+  {
+    id: 'nzbget', name: 'NZBGet',
+    description: 'Lightweight Usenet downloader',
+    category: 'Downloads', icon: '📥',
+    image: 'lscr.io/linuxserver/nzbget:latest',
+    ports: { 6789: 6789 },
+    volumes: {
+      [`${BASE_DIR}/nzbget/config`]: '/config',
+      [D.downloads]: '/downloads',
+    },
+    env: { PUID: '0', PGID: '0' },
+  },
+  {
+    id: 'nzbhydra2', name: 'NZBHydra2',
+    description: 'Usenet meta search',
+    category: 'Downloads', icon: '🔍',
+    image: 'lscr.io/linuxserver/nzbhydra2:latest',
+    ports: { 5076: 5076 },
+    volumes: {
+      [`${BASE_DIR}/nzbhydra2/config`]: '/config',
+    },
+    env: { PUID: '0', PGID: '0' },
+    connectsTo: ['sabnzbd', 'nzbget'],
   },
 
   // ── Cloud ──────────────────────────────────

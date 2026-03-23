@@ -289,6 +289,11 @@ const appCategories = [
       { name: 'Plex', desc: 'Stream your media library' },
       { name: 'Jellyfin', desc: 'Open-source media server' },
       { name: 'Navidrome', desc: 'Music streaming server' },
+      { name: 'Audiobookshelf', desc: 'Audiobook & podcast server' },
+      { name: 'Tautulli', desc: 'Plex monitoring & stats' },
+      { name: 'Overseerr', desc: 'Media requests for Plex' },
+      { name: 'Jellyseerr', desc: 'Media requests for Jellyfin' },
+      { name: 'Tdarr', desc: 'Media transcoding & health' },
     ],
   },
   {
@@ -297,22 +302,59 @@ const appCategories = [
       { name: 'Radarr', desc: 'Movie collection manager' },
       { name: 'Sonarr', desc: 'TV series manager' },
       { name: 'qBittorrent', desc: 'Torrent client' },
+      { name: 'Prowlarr', desc: 'Indexer manager' },
+      { name: 'Bazarr', desc: 'Automatic subtitles' },
+      { name: 'SABnzbd', desc: 'Usenet binary newsreader' },
+      { name: 'NZBGet', desc: 'Lightweight Usenet downloader' },
+      { name: 'NZBHydra2', desc: 'Usenet meta search' },
     ],
   },
   {
-    name: 'Cloud',
+    name: 'Cloud & Productivity',
     apps: [
       { name: 'Nextcloud', desc: 'Files, calendar, contacts' },
       { name: 'Immich', desc: 'Photo & video backup' },
       { name: 'Paperless-ngx', desc: 'Document management' },
+      { name: 'FileBrowser', desc: 'Web-based file manager' },
+      { name: 'Syncthing', desc: 'Peer-to-peer file sync' },
+      { name: 'Vaultwarden', desc: 'Password manager' },
+      { name: 'Mealie', desc: 'Recipe manager & meal planner' },
+      { name: 'Homepage', desc: 'Services dashboard' },
     ],
   },
   {
-    name: 'Network',
+    name: 'Network & Security',
     apps: [
       { name: 'Pi-hole', desc: 'Network-wide ad blocker' },
+      { name: 'AdGuard Home', desc: 'DNS ad blocker & privacy' },
+      { name: 'Nginx Proxy Manager', desc: 'Reverse proxy with SSL' },
       { name: 'WireGuard', desc: 'Fast VPN tunnel' },
       { name: 'Tailscale', desc: 'Zero-config mesh VPN' },
+    ],
+  },
+  {
+    name: 'Monitoring',
+    apps: [
+      { name: 'Grafana', desc: 'Beautiful dashboards' },
+      { name: 'Uptime Kuma', desc: 'Service uptime monitoring' },
+      { name: 'Portainer', desc: 'Docker management UI' },
+      { name: 'Dozzle', desc: 'Real-time Docker logs' },
+    ],
+  },
+  {
+    name: 'Automation',
+    apps: [
+      { name: 'Home Assistant', desc: 'Home automation hub' },
+      { name: 'Node-RED', desc: 'Flow-based IoT automation' },
+      { name: 'Mosquitto MQTT', desc: 'MQTT message broker' },
+      { name: 'n8n', desc: 'Workflow automation' },
+    ],
+  },
+  {
+    name: 'Development',
+    apps: [
+      { name: 'Gitea', desc: 'Self-hosted Git service' },
+      { name: 'VS Code Server', desc: 'VS Code in your browser' },
     ],
   },
 ]
@@ -323,14 +365,15 @@ function AppStore() {
       <div className="max-w-7xl mx-auto px-6">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="text-center mb-16">
           <motion.h2 variants={fadeUp} className="text-4xl lg:text-5xl font-bold mb-4">
-            50+ apps. <span className="gradient-text">One click.</span>
+            40+ apps. <span className="gradient-text">One click.</span>
           </motion.h2>
           <motion.p variants={fadeUp} className="text-xl text-nest-400 max-w-2xl mx-auto">
             Pre-configured Docker and LXC templates. No YAML editing, no port conflicts, no headaches.
           </motion.p>
+          <p className="text-sm text-nest-500 mt-2">Usenet • Torrents • Media • Cloud • Smart Home • Dev Tools</p>
         </motion.div>
 
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {appCategories.map((cat, i) => (
             <motion.div key={i} variants={fadeUp} className="space-y-3">
               <h3 className="text-sm font-semibold text-accent-400 uppercase tracking-wider mb-4">{cat.name}</h3>
@@ -363,7 +406,7 @@ function Comparison() {
     { feature: 'Virtual Machines', hexos: 'Limited', unraid: 'Basic KVM', proxnest: 'Full KVM ✅' },
     { feature: 'Containers', hexos: 'Docker', unraid: 'Docker', proxnest: 'Docker + LXC ✅' },
     { feature: 'ZFS Support', hexos: 'Via TrueNAS', unraid: 'Plugin', proxnest: 'Native ✅' },
-    { feature: 'App Store', hexos: 'Limited', unraid: 'Community', proxnest: '50+ curated ✅' },
+    { feature: 'App Store', hexos: 'Limited', unraid: 'Community', proxnest: '40+ curated ✅' },
     { feature: 'Open Source', hexos: 'No', unraid: 'Partial', proxnest: 'Core: yes ✅' },
     { feature: 'Status', hexos: 'Beta (delayed)', unraid: 'Stable', proxnest: 'Early Access' },
   ]
