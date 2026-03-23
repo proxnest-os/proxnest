@@ -16,3 +16,4 @@ scripts/
 *.key
 data/
 !cloud/data/.gitkeep
+demo-output/
