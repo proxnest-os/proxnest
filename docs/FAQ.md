@@ -3,20 +3,21 @@
 ## General
 
 ### What is ProxNest?
-ProxNest is a home server operating system built on Proxmox VE. It adds a beautiful web dashboard, one-click app installs, guided storage management, and an optional cloud portal for remote access. Think of it as "Proxmox made easy."
+ProxNest is a home server operating system built on Proxmox VE. It adds a web dashboard, one-click app installs, guided storage management, and an optional cloud portal for remote access. 
 
 ### Is ProxNest free?
 Yes! The core is completely free and open source (AGPLv3). The **Pro** tier ($5/month or $50/year) adds cloud remote access, multi-user support, update management, and priority support.
 
 ### What's the difference between ProxNest and Unraid/TrueNAS/Hexos?
-| | ProxNest | Unraid | TrueNAS | Hexos |
-|---|---------|--------|---------|-------|
-| Price | Free / $5/mo | $60-130 | Free | $200 |
-| Base OS | Proxmox VE | Custom | FreeBSD/Linux | TrueNAS |
-| VM Support | Full KVM | Basic | Yes | Limited |
+| | ProxNest | TrueNAS | OMV | Unraid |
+|---|---------|---------|-----|--------|
+| Price | Free / $5/mo Pro | Free | Free | $60-130 |
+| Focus | Apps + VMs | ZFS storage | Simple NAS | Storage + Docker |
+| VMs | Full KVM | Via bhyve | No | Basic KVM |
 | Containers | Docker + LXC | Docker | Docker | Docker |
-| Cloud Required | No | No | No | Yes |
-| Open Source | Core: Yes | Partial | Yes | No |
+| ZFS | Native (Proxmox) | Excellent | Plugin | Plugin |
+| App auto-config | Yes | No | No | No |
+| Open Source | Yes | Yes | Yes | No |
 
 ### Do I need the cloud dashboard?
 No. Everything works 100% locally. The cloud dashboard (cloud.proxnest.com) is purely optional — it's for remote access when you're away from home.

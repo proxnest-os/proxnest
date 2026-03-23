@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to ProxNest! We welcome contributions of all kinds — code, documentation, bug reports, feature requests, and community support.
 
-## 🏗️ Tech Stack Overview
+## Tech Stack Overview
 
 ### Frontend
 | Component | Technology |
@@ -135,7 +135,7 @@ cd api && npm run build  # Output: dist/
 
 ---
 
-## 📝 How to Contribute
+## How to Contribute
 
 ### Reporting Bugs
 1. Search [existing issues](https://github.com/meyerg27/proxnest/issues) first
