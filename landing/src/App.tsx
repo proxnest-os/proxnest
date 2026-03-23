@@ -4,7 +4,7 @@ import {
   Server, Shield, Zap, HardDrive, Layout, Users,
   ChevronRight, Check, ArrowRight, Menu, X, Github, Twitter,
   Box, Download,
-  Terminal, Star
+  Terminal, Star, MessageCircle
 } from 'lucide-react'
 
 // Animation variants
@@ -40,6 +40,9 @@ function Navbar() {
           <a href="https://cloud.proxnest.com/login" className="px-4 py-2 border border-nest-600 hover:border-accent-500 rounded-lg font-medium transition">
             Login
           </a>
+          <a href="https://discord.gg/b4NGUMYU34" target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-[#5865F2] hover:bg-[#4752C4] rounded-lg font-medium transition flex items-center gap-1.5">
+            <MessageCircle size={16} /> Discord
+          </a>
           <a href="#install" className="px-5 py-2 bg-accent-500 hover:bg-accent-600 rounded-lg font-medium transition">
             Install Now
           </a>
@@ -55,6 +58,7 @@ function Navbar() {
           <a href="#pricing" className="text-nest-300" onClick={() => setOpen(false)}>Pricing</a>
           <a href="#compare" className="text-nest-300" onClick={() => setOpen(false)}>Compare</a>
           <a href="https://cloud.proxnest.com/login" className="px-5 py-2 border border-nest-600 rounded-lg font-medium text-center" onClick={() => setOpen(false)}>Login</a>
+          <a href="https://discord.gg/b4NGUMYU34" target="_blank" rel="noopener noreferrer" className="px-5 py-2 bg-[#5865F2] rounded-lg font-medium text-center flex items-center justify-center gap-1.5" onClick={() => setOpen(false)}><MessageCircle size={16} /> Discord</a>
           <a href="#install" className="px-5 py-2 bg-accent-500 rounded-lg font-medium text-center" onClick={() => setOpen(false)}>Install Now</a>
         </div>
       )}
@@ -97,6 +101,12 @@ function Hero() {
             <span className="flex items-center gap-1.5"><Check size={14} className="text-green-400" /> Free forever tier</span>
             <span className="flex items-center gap-1.5"><Check size={14} className="text-green-400" /> No cloud required</span>
             <span className="flex items-center gap-1.5"><Check size={14} className="text-green-400" /> Open source core</span>
+          </motion.div>
+          <motion.div variants={fadeUp} className="mt-6">
+            <a href="https://discord.gg/b4NGUMYU34" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#5865F2]/15 border border-[#5865F2]/30 hover:bg-[#5865F2]/25 rounded-xl text-[#8b9aff] hover:text-white transition text-sm font-medium">
+              <svg width="20" height="16" viewBox="0 0 71 55" fill="currentColor"><path d="M60.1 4.9A58.5 58.5 0 0045.4.2a.2.2 0 00-.2.1 40.8 40.8 0 00-1.8 3.7 54 54 0 00-16.2 0A37.4 37.4 0 0025.4.3a.2.2 0 00-.2-.1A58.4 58.4 0 0010.5 4.9a.2.2 0 00-.1.1C1.5 18.7-.9 32.2.3 45.5v.1a58.7 58.7 0 0017.7 9a.2.2 0 00.3-.1 42 42 0 003.6-5.9.2.2 0 00-.1-.3 38.7 38.7 0 01-5.5-2.6.2.2 0 01 0-.4l1.1-.9a.2.2 0 01.2 0 41.9 41.9 0 0035.6 0 .2.2 0 01.2 0l1.1.9a.2.2 0 010 .3 36.3 36.3 0 01-5.5 2.7.2.2 0 00-.1.3 47.2 47.2 0 003.6 5.9.2.2 0 00.2.1 58.5 58.5 0 0017.7-9v-.1c1.4-15-2.3-28.4-9.8-40.1a.2.2 0 00-.1-.1zM23.7 37.3c-3.5 0-6.3-3.2-6.3-7.1s2.8-7.1 6.3-7.1 6.4 3.2 6.3 7.1c0 3.9-2.8 7.1-6.3 7.1zm23.2 0c-3.5 0-6.3-3.2-6.3-7.1s2.8-7.1 6.3-7.1 6.4 3.2 6.3 7.1c0 3.9-2.7 7.1-6.3 7.1z"/></svg>
+              Join our Discord — Get help, share builds, request features
+            </a>
           </motion.div>
         </motion.div>
 
@@ -582,7 +592,7 @@ function Footer() {
             <h4 className="font-semibold mb-3 text-sm">Community</h4>
             <ul className="space-y-2 text-sm text-nest-400">
               <li><a href="https://github.com/meyerg27/proxnest" target="_blank" rel="noopener noreferrer" className="hover:text-white transition">GitHub</a></li>
-              <li><a href="#early-access" className="hover:text-white transition">Discord (Coming Soon)</a></li>
+              <li><a href="https://discord.gg/b4NGUMYU34" target="_blank" rel="noopener noreferrer" className="hover:text-white transition flex items-center gap-1.5"><MessageCircle size={14} className="text-[#5865F2]" /> Discord</a></li>
               <li><a href="#early-access" className="hover:text-white transition">Reddit (Coming Soon)</a></li>
               <li><a href="#early-access" className="hover:text-white transition">Blog (Coming Soon)</a></li>
             </ul>
@@ -600,6 +610,7 @@ function Footer() {
           <p className="text-sm text-nest-500">&copy; 2026 ProxNest. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <a href="https://github.com/meyerg27/proxnest" target="_blank" rel="noopener noreferrer" className="text-nest-500 hover:text-white transition"><Github size={18} /></a>
+            <a href="https://discord.gg/b4NGUMYU34" target="_blank" rel="noopener noreferrer" className="text-nest-500 hover:text-[#5865F2] transition"><MessageCircle size={18} /></a>
             <a href="#" className="text-nest-500 hover:text-white transition"><Twitter size={18} /></a>
           </div>
         </div>

@@ -1,178 +1,173 @@
-# ProxNest 🏠
+<p align="center">
+  <img src="https://proxnest.com/og-image.png" alt="ProxNest" width="600" />
+</p>
 
-**The home server OS that doesn't suck.**
+<h1 align="center">ProxNest 🏠</h1>
 
-ProxNest is a beautiful, local-first home server operating system built on top of Proxmox VE. It turns bare metal into a fully managed home server with one-click app installs, simple storage management, and a modern web dashboard — no cloud dependency required.
+<p align="center">
+  <strong>The home server OS that doesn't suck.</strong><br />
+  Install one ISO. Click "Media Server." Watch 6 apps install, auto-configure, and connect themselves.
+</p>
 
-## Why ProxNest?
+<p align="center">
+  <a href="https://proxnest.com">Website</a> •
+  <a href="https://cloud.proxnest.com">Cloud Dashboard</a> •
+  <a href="https://discord.gg/b4NGUMYU34">Discord</a> •
+  <a href="./docs/README.md">Documentation</a>
+</p>
 
-| | Hexos | Unraid | ProxNest |
+<p align="center">
+  <a href="https://discord.gg/b4NGUMYU34"><img src="https://img.shields.io/discord/1485446431765696674?color=5865F2&label=Discord&logo=discord&logoColor=white" alt="Discord" /></a>
+  <a href="https://github.com/meyerg27/proxnest/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPLv3-blue.svg" alt="License" /></a>
+  <a href="https://github.com/meyerg27/proxnest/releases"><img src="https://img.shields.io/github/v/release/meyerg27/proxnest?label=version" alt="Version" /></a>
+</p>
+
+---
+
+## ⚡ Quick Start
+
+```bash
+# 1. Install on existing Proxmox (one command)
+curl -fsSL https://proxnest.com/install.sh | bash
+
+# 2. Open the dashboard
+open https://your-server-ip:3000
+
+# 3. Install your first app stack
+# Dashboard → App Store → Media Server → Install Stack
+```
+
+Or [download the ISO](https://github.com/meyerg27/proxnest/releases/download/v0.4.0/proxnest-0.4.0.iso) for a fresh install.
+
+---
+
+## ✨ Features
+
+- 🖱️ **One-Click App Stacks** — Install 6+ apps with one click, auto-configured and auto-wired
+- 📦 **100+ Apps** — Media, downloads, cloud storage, home automation, monitoring, AI, gaming
+- 💽 **Storage Wizard** — Guided ZFS/ext4 setup with disk roles (media, downloads, backups)
+- 🌐 **Cloud Dashboard** — Manage from anywhere via [cloud.proxnest.com](https://cloud.proxnest.com)
+- 🔒 **Local-First** — Everything runs on your hardware. Cloud is optional.
+- 🖥️ **Web Terminal** — Full shell access from your browser
+- 🔗 **Auto-Wiring** — Radarr finds qBit, Prowlarr syncs indexers, no manual config
+- 💾 **One-Click Backups** — Back up and restore all app configs instantly
+- 📊 **Real-Time Monitoring** — CPU, RAM, storage, network stats at a glance
+- 🔐 **Built-in VPN** — WireGuard + OpenVPN for secure torrent traffic and remote access
+- 🤖 **AI Ready** — Run Ollama, Open WebUI, Stable Diffusion locally
+
+---
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="https://proxnest.com/screenshots/ss-overview.png" alt="Dashboard Overview" width="800" /><br />
+  <em>Dashboard — System stats, quick actions, getting started guide</em>
+</p>
+
+<p align="center">
+  <img src="https://proxnest.com/screenshots/ss-storage.png" alt="Storage Wizard" width="800" /><br />
+  <em>Storage Wizard — Detect disks, manage pools, assign roles</em>
+</p>
+
+---
+
+## 🆚 How We Compare
+
+| | Hexos | Unraid | **ProxNest** |
 |---|---|---|---|
-| **Price** | $200 | $60-130 | Free / $5/mo Pro |
-| **Base** | TrueNAS | Custom Linux | Proxmox VE |
-| **Cloud Required** | Yes ❌ | No | No ✅ |
-| **VM Support** | Limited | Basic | Full KVM ✅ |
-| **Containers** | Docker only | Docker only | Docker + LXC ✅ |
-| **Storage** | ZFS (TrueNAS) | Custom | ZFS (native) ✅ |
-| **API** | Minimal | Minimal | Full Proxmox API ✅ |
-| **Status** | Beta (delayed) | Stable | Building 🚧 |
+| **Price** | $200 | $60-130 | **Free + $5/mo Pro** |
+| **Base OS** | TrueNAS | Custom Linux | **Proxmox VE** |
+| **Cloud Required** | Yes ❌ | No | **No ✅** |
+| **Virtual Machines** | Limited | Basic KVM | **Full KVM ✅** |
+| **Containers** | Docker | Docker | **Docker + LXC ✅** |
+| **ZFS Support** | Via TrueNAS | Plugin | **Native ✅** |
+| **App Store** | Limited | Community | **100+ curated ✅** |
+| **Open Source** | No | Partial | **Core: yes ✅** |
 
-## Architecture
+---
+
+## 📖 Documentation
+
+| Guide | Description |
+|-------|-------------|
+| [Installation](docs/INSTALLATION.md) | System requirements, ISO flashing, setup wizard |
+| [Apps & Stacks](docs/APPS.md) | All 100+ apps, 8 curated stacks, auto-wiring |
+| [Storage](docs/STORAGE.md) | Storage wizard, ZFS basics, disk roles |
+| [Networking](docs/NETWORKING.md) | VPN, reverse proxy, remote access, DNS |
+| [Backups](docs/BACKUPS.md) | Backup manager, scheduling, restore |
+| [FAQ](docs/FAQ.md) | Common questions and troubleshooting |
+| [Contributing](docs/CONTRIBUTING.md) | How to contribute to ProxNest |
+
+---
+
+## 💬 Community
+
+[![Discord](https://img.shields.io/discord/1485446431765696674?color=5865F2&label=Join%20Discord&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/b4NGUMYU34)
+
+- **[Discord Server](https://discord.gg/b4NGUMYU34)** — Get help, share your builds, request features, chat with the community
+- **[GitHub Issues](https://github.com/meyerg27/proxnest/issues)** — Bug reports
+- **[GitHub Discussions](https://github.com/meyerg27/proxnest/discussions)** — Feature requests & questions
+
+---
+
+## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │                   ProxNest Stack                     │
 ├─────────────────────────────────────────────────────┤
-│                                                      │
 │  ┌──────────────┐  ┌──────────────┐                 │
-│  │  Web Dashboard│  │ Landing Page │   React + TS    │
-│  │  (port 3000) │  │ (proxnest.com)│  + Tailwind    │
+│  │ Cloud Dashboard│  │ Landing Page │  React + TS    │
+│  │ (cloud.proxnest│  │ (proxnest.com│  + Tailwind    │
+│  │  .com)        │  │  )           │                 │
 │  └──────┬───────┘  └──────────────┘                 │
 │         │                                            │
 │  ┌──────┴───────┐                                   │
-│  │  ProxNest API │  Node.js + TypeScript             │
-│  │  (port 4000) │  REST API wrapping Proxmox        │
+│  │  ProxNest API │  Node.js + Fastify               │
 │  └──────┬───────┘                                   │
 │         │                                            │
 │  ┌──────┴───────┐                                   │
-│  │  ProxNest    │  Lightweight daemon                │
-│  │  Agent       │  System monitoring, cloud sync     │
+│  │  ProxNest    │  System daemon (WebSocket)        │
+│  │  Agent       │                                    │
 │  └──────┬───────┘                                   │
 │         │                                            │
 │  ┌──────┴───────┐                                   │
 │  │  Proxmox VE  │  KVM, LXC, ZFS, Networking       │
-│  │  (host OS)   │                                    │
 │  └──────────────┘                                   │
-│                                                      │
 └─────────────────────────────────────────────────────┘
 ```
 
-## Tech Stack
+---
 
-### Frontend (Dashboard + Landing)
-- **React 18** + TypeScript
-- **Tailwind CSS** — utility-first styling
-- **Vite** — fast builds
-- **Lucide React** — icon library
-- **Framer Motion** — animations
-- **React Router v6** — client-side routing
-- **React Query** — server state management
-
-### Backend (API)
-- **Node.js** + TypeScript
-- **Fastify** — high-performance HTTP framework
-- **Proxmox API client** — wraps the PVE REST API
-- **JWT** — authentication
-- **Zod** — schema validation
-- **SQLite** (via better-sqlite3) — local config/state DB
-
-### Agent
-- **Node.js** + TypeScript (single binary via `pkg`)
-- **WebSocket** — real-time communication with dashboard
-- **systeminformation** — hardware stats
-- **node-cron** — scheduled tasks (backups, updates)
-
-## Core Features
-
-### 1. One-Click App Marketplace
-Pre-configured templates for popular self-hosted apps:
-- **Media:** Plex, Jellyfin, Emby, Navidrome
-- **Downloads:** Radarr, Sonarr, Lidarr, Prowlarr, qBittorrent, SABnzbd
-- **Cloud:** Nextcloud, Immich, Paperless-ngx
-- **Networking:** Pi-hole, AdGuard Home, WireGuard, Tailscale
-- **Home Automation:** Home Assistant, Node-RED, Zigbee2MQTT
-- **Dev:** Gitea, VS Code Server, Portainer
-
-Each app is a template that specifies:
-```typescript
-interface AppTemplate {
-  id: string;
-  name: string;
-  icon: string;
-  category: 'media' | 'downloads' | 'cloud' | 'network' | 'home' | 'dev';
-  type: 'docker' | 'lxc';
-  config: DockerComposeConfig | LXCConfig;
-  ports: PortMapping[];
-  volumes: VolumeMapping[];
-  env: EnvVar[];
-  requirements: { minRam: number; minDisk: number; };
-}
-```
-
-### 2. Storage Management (ZFS Made Simple)
-- Visual pool/dataset browser
-- Create pools with guided wizard (mirror, RAIDZ1/2/3)
-- Snapshot management with schedule builder
-- Disk health monitoring (SMART)
-- Storage usage charts and projections
-
-### 3. Dashboard
-- System overview (CPU, RAM, network, temps)
-- Running apps with status indicators
-- Storage pool health at a glance
-- Recent activity log
-- Dark theme, responsive, fast
-
-### 4. User Management
-- Local user accounts with role-based access
-- Admin / User / Viewer roles
-- Per-app access control
-- Session management
-
-### 5. Cloud Portal (Optional)
-- Zero-config remote access via agent
-- Agent registers with portal, establishes WireGuard tunnel
-- Access dashboard from anywhere without port forwarding
-- Push notifications for alerts
-- **100% optional** — everything works locally without it
-
-## Project Structure
-
-```
-proxnest/
-├── README.md              # This file
-├── BUILD_PROGRESS.md      # Build tracking
-├── landing/               # Marketing website (proxnest.com)
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── vite.config.ts
-├── dashboard/             # Admin web UI
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── vite.config.ts
-├── api/                   # Backend REST API
-│   ├── src/
-│   ├── package.json
-│   └── tsconfig.json
-└── agent/                 # Server daemon
-    ├── src/
-    ├── package.json
-    └── tsconfig.json
-```
-
-## Revenue Model
-
-| Tier | Price | Features |
-|------|-------|----------|
-| **Free** | $0 | Dashboard, 5 apps, basic storage, local only |
-| **Pro** | $5/mo or $50/yr | Unlimited apps, cloud portal, VPN, priority support |
-| **Hardware Bundle** | TBD | Pre-installed on partner mini PCs |
-
-## Development
+## 🛠️ Development
 
 ```bash
+# Clone
+git clone https://github.com/meyerg27/proxnest.git
+cd proxnest
+
 # Landing page
 cd landing && npm install && npm run dev
 
+# Cloud dashboard
+cd cloud/dashboard && npm install && npm run dev
+
 # API server
 cd api && npm install && npm run dev
-
-# Dashboard
-cd dashboard && npm install && npm run dev
 ```
 
-## License
+See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for the full development guide.
 
-Dual-licensed: Open-source core (AGPLv3) + Commercial features (proprietary).
+---
+
+## 📜 License
+
+Dual-licensed: Open-source core ([AGPLv3](LICENSE)) + Commercial features (proprietary).
+
+---
+
+<p align="center">
+  <strong>Made with ❤️ for the self-hosted community</strong><br />
+  <a href="https://discord.gg/b4NGUMYU34">Join us on Discord</a> •
+  <a href="https://proxnest.com">proxnest.com</a>
+</p>
