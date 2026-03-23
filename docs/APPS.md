@@ -1,6 +1,6 @@
 # App Store & Stacks
 
-ProxNest ships with **100+ pre-configured apps** spanning media, downloads, cloud storage, networking, monitoring, home automation, productivity, development, gaming, communication, and AI.
+ProxNest ships with **40+ pre-configured apps** spanning media, downloads, cloud storage, networking, monitoring, home automation, productivity, development, gaming, communication, and AI.
 
 ## 🎯 One-Click Stacks
 

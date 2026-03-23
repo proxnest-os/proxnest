@@ -7,7 +7,7 @@ Welcome to the official ProxNest documentation. Find everything you need to inst
 | Document | Description |
 |----------|-------------|
 | [Installation Guide](INSTALLATION.md) | System requirements, ISO flashing, and setup wizard |
-| [App Store & Stacks](APPS.md) | All 100+ apps, 8 curated stacks, auto-wiring |
+| [App Store & Stacks](APPS.md) | All 40+ apps, 8 curated stacks, auto-wiring |
 | [Storage Management](STORAGE.md) | Storage wizard, ZFS basics, disk roles |
 | [Networking](NETWORKING.md) | VPN, reverse proxy, remote access, DNS |
 | [Backups](BACKUPS.md) | Backup manager, scheduling, and restore |
