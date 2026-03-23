@@ -623,12 +623,18 @@ function CTA() {
             </div>
           </motion.div>
           <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="https://github.com/proxnest-os/proxnest/releases/download/v0.4.0/proxnest-0.4.0.iso" className="px-8 py-3.5 bg-accent-500 hover:bg-accent-600 rounded-xl font-semibold text-lg transition flex items-center justify-center gap-2 shadow-lg shadow-accent-500/25">
-              ⬇️ Download ISO (1.5 GB)
+            <a href="https://cloud.proxnest.com" target="_blank" rel="noopener noreferrer" className="px-8 py-3.5 bg-accent-500 hover:bg-accent-600 rounded-xl font-semibold text-lg transition flex items-center justify-center gap-2 shadow-lg shadow-accent-500/25">
+              🖥️ Try the Live Demo
+            </a>
+            <a href="https://github.com/proxnest-os/proxnest/releases/download/v0.4.0/proxnest-0.4.0.iso" className="px-8 py-3.5 border border-nest-600 hover:border-nest-500 rounded-xl font-semibold text-lg transition flex items-center justify-center gap-2 text-nest-200">
+              ⬇️ Download ISO
             </a>
             <a href="https://github.com/proxnest-os/proxnest" target="_blank" rel="noopener noreferrer" className="px-8 py-3.5 border border-nest-600 hover:border-nest-500 rounded-xl font-semibold text-lg transition flex items-center justify-center gap-2 text-nest-200">
-              <Github size={20} /> Source on GitHub
+              <Github size={20} /> GitHub
             </a>
+          </motion.div>
+          <motion.div variants={fadeUp} className="mt-3 text-nest-500 text-sm">
+            Demo login: demo@proxnest.com / ProxNestDemo2026!
           </motion.div>
           <motion.div variants={fadeUp} className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-nest-400 text-sm">
             <span className="flex items-center gap-2"><Star size={14} className="text-amber-400" /> AGPLv3 licensed</span>
