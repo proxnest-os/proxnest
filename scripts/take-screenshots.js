@@ -18,7 +18,7 @@ const LOGIN_PASSWORD = 'ProxNest2026!';
 const REPLACEMENTS = [
   // Name variations
   ['Grayson Meyer', 'Alex Demo'],
-  ['grayson meyer', 'Alex Demo'],
+  ['REDACTED_NAME', 'Alex Demo'],
   ['REDACTED_EMAIL', 'alex@example.com'],
   ['REDACTED_USER', 'alex'],
   ['Grayson', 'Alex'],
