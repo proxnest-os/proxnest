@@ -5,3 +5,8 @@ dist/
 config.json
 .DS_Store
 .vite/
+BUILD_PROGRESS.md
+AUTO_CONFIG_SPEC.md
+tasks/
+marketing/
+*.log
