@@ -47,9 +47,9 @@ command -v git &>/dev/null || apt-get install -y git >/dev/null 2>&1
 echo "📥 Downloading ProxNest..."
 PROXNEST_DIR="/opt/proxnest"
 rm -rf "$PROXNEST_DIR"
-git clone --depth 1 https://github.com/meyerg27/proxnest.git "$PROXNEST_DIR" 2>/dev/null || {
+git clone --depth 1 https://github.com/proxnest-os/proxnest.git "$PROXNEST_DIR" 2>/dev/null || {
   mkdir -p "$PROXNEST_DIR"
-  curl -fsSL https://github.com/meyerg27/proxnest/archive/refs/heads/main.tar.gz | tar xz -C "$PROXNEST_DIR" --strip-components=1
+  curl -fsSL https://github.com/proxnest-os/proxnest/archive/refs/heads/main.tar.gz | tar xz -C "$PROXNEST_DIR" --strip-components=1
 }
 
 # Install agent deps

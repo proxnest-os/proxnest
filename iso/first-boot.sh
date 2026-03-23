@@ -68,9 +68,9 @@ echo "[ProxNest] Cloning ProxNest..."
 if [ -d "$PROXNEST_DIR" ]; then
   cd "$PROXNEST_DIR" && git pull --ff-only 2>/dev/null || true
 else
-  git clone --depth 1 https://github.com/meyerg27/proxnest.git "$PROXNEST_DIR" 2>&1 || {
+  git clone --depth 1 https://github.com/proxnest-os/proxnest.git "$PROXNEST_DIR" 2>&1 || {
     mkdir -p "$PROXNEST_DIR"
-    curl -fsSL https://github.com/meyerg27/proxnest/archive/refs/heads/main.tar.gz | tar xz -C "$PROXNEST_DIR" --strip-components=1
+    curl -fsSL https://github.com/proxnest-os/proxnest/archive/refs/heads/main.tar.gz | tar xz -C "$PROXNEST_DIR" --strip-components=1
   }
 fi
 

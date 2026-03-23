@@ -101,9 +101,9 @@ fi
 echo "[ProxNest] Installing ProxNest..."
 PROXNEST_DIR="/opt/proxnest"
 if [ ! -d "$PROXNEST_DIR" ]; then
-  git clone --depth 1 https://github.com/meyerg27/proxnest.git "$PROXNEST_DIR" 2>/dev/null || {
+  git clone --depth 1 https://github.com/proxnest-os/proxnest.git "$PROXNEST_DIR" 2>/dev/null || {
     mkdir -p "$PROXNEST_DIR"
-    curl -fsSL https://github.com/meyerg27/proxnest/archive/refs/heads/main.tar.gz | tar xz -C "$PROXNEST_DIR" --strip-components=1
+    curl -fsSL https://github.com/proxnest-os/proxnest/archive/refs/heads/main.tar.gz | tar xz -C "$PROXNEST_DIR" --strip-components=1
   }
 fi
 
