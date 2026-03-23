@@ -11,7 +11,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const SCREENSHOTS_DIR = join(__dirname, '..', 'landing', 'public', 'screenshots');
 
 const CLOUD_URL = 'https://cloud.proxnest.com';
-const LOGIN_EMAIL = 'graysonmeyerstudio@icloud.com';
+const LOGIN_EMAIL = 'REDACTED_EMAIL';
 const LOGIN_PASSWORD = 'ProxNest2026!';
 
 // Anonymization replacements
@@ -19,8 +19,8 @@ const REPLACEMENTS = [
   // Name variations
   ['Grayson Meyer', 'Alex Demo'],
   ['grayson meyer', 'Alex Demo'],
-  ['graysonmeyerstudio@icloud.com', 'alex@example.com'],
-  ['graysonmeyerstudio', 'alex'],
+  ['REDACTED_EMAIL', 'alex@example.com'],
+  ['REDACTED_USER', 'alex'],
   ['Grayson', 'Alex'],
   ['Meyer', 'Demo'],
   // IP replacements
@@ -37,8 +37,8 @@ async function anonymizePage(page) {
       text = text.replace(/192\.168\.50\.(\d+)/g, '10.0.1.$1');
       // Replace names
       text = text.replace(/Grayson Meyer/gi, 'Alex Demo');
-      text = text.replace(/graysonmeyerstudio@icloud\.com/g, 'alex@example.com');
-      text = text.replace(/graysonmeyerstudio/g, 'alex');
+      text = text.replace(/REDACTED_USER@icloud\.com/g, 'alex@example.com');
+      text = text.replace(/REDACTED_USER/g, 'alex');
       text = text.replace(/Grayson/g, 'Alex');
       text = text.replace(/Meyer/g, 'Demo');
       if (text !== node.textContent) node.textContent = text;
@@ -48,7 +48,7 @@ async function anonymizePage(page) {
       if (el.value) {
         el.value = el.value.replace(/192\.168\.50\.(\d+)/g, '10.0.1.$1')
           .replace(/Grayson Meyer/gi, 'Alex Demo')
-          .replace(/graysonmeyerstudio/g, 'alex');
+          .replace(/REDACTED_USER/g, 'alex');
       }
     });
   }, []);
